@@ -1,0 +1,49 @@
+[global]
+project = 'CheckSomeVariable'
+
+#loglevel = 'DEBUG'
+loglevel = 'INFO'
+#loglevel = 'WARNING'
+#loglevel = 'ERROR'
+#loglevel = 'CRITCAL'
+
+[CheckSomeVariable]
+dirpath_in = './sample'
+dirpath_out = '.'
+lst_fig_type = ['val1', 'val2']
+lst_fig_dir = ['dir1', 'dir2']
+delta_t = 6
+ncols = 1
+sizex = 2.5
+sizey = 4.5
+col_int = 2.5
+row_int = 2.5
+col_sta = 3.0
+row_sta = 1.5
+
+left = 3.45
+top = 3.5125
+width = 4.01625
+height = 3.591
+
+targets = ['Pattern1', 'Pattern2']
+
+lst_period_sta = ['2007071418', '2007071418']
+lst_period_end = ['2007071418', '2007071418']
+
+title = 'タイトル'
+str_suffix = '{0:04d}{1:02d}{2:02d}{3:02d}.png'
+
+[[CheckSomeVariable.slide]]
+title = 'スライド1'
+text1 = 'テキスト1'
+level1 = 0
+text2 = 'テキスト2'
+level2 = 1
+
+[[CheckSomeVariable.slide]]
+title = 'スライド2'
+text1 = 'テキスト1'
+level1 = 0
+text2 = 'テキスト2'
+level2 = 1
