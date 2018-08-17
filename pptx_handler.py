@@ -146,7 +146,7 @@ class PPTXHandler(object):
         self.bullet(tf, conf_slide, 'text7', 'level7')
 
     def bullet(self, tf, conf_slide, key_text, key_level):
-        if 'text7' in conf_slide:
+        if key_text in conf_slide:
             p = tf.add_paragraph()
             p.text = conf_slide[key_text]
             p.level = conf_slide[key_level]
