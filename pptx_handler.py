@@ -153,7 +153,7 @@ class PPTXHandler(object):
 
     def get_filepath(self, fig_dir, fig_type, suffix):
         if fig_type != '-':
-            img_path = '{0}/{2}/{1}/{3}/{2}_{4}'.format(self.dirpath_in, fig_dir, fig_type, self.target, suffix)
+            img_path = '{0}/{1}/{2}/{3}/{2}_{4}'.format(self.dirpath_in, fig_dir, fig_type, self.target, suffix)
         return img_path
 
     def loop(self, dt):
