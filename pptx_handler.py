@@ -47,8 +47,6 @@ class PPTXHandler(object):
         self.dirpath_in = project_conf['dirpath_in']
         self.dirpath_out = project_conf['dirpath_out']
         self.delta_t = project_conf['delta_t']
-        self.lst_fig_type = project_conf['lst_fig_type']
-        self.lst_fig_dir = project_conf['lst_fig_dir']
 
         # Parameters
         self.ncols = project_conf['ncols']
@@ -64,16 +62,12 @@ class PPTXHandler(object):
         self.width = project_conf['width']
         self.height = project_conf['height']
 
-        self.targets = project_conf['targets']
-
-        self.lst_period = []
-        for period_sta, period_end in zip(project_conf['lst_period_sta'], project_conf['lst_period_end']):
-            self.lst_period.append([datetime.datetime.strptime(period_sta, '%Y%m%d%H'), datetime.datetime.strptime(period_end, '%Y%m%d%H')])
-
         self.title = project_conf['title']
         self.str_suffix = project_conf['str_suffix']
 
         self.lst_slide = project_conf['slide']
+
+        self.lst_fig_category = project_conf['lst_fig_category']
 
     def create_pptx(self):
         self.const_description_slides()
@@ -98,16 +92,22 @@ class PPTXHandler(object):
         return [dt1 + td * i for i in range(ngrids_time)]
 
     def const_data_slides(self):
-        for i, period in enumerate(self.lst_period):
-            self.target = self.targets[i]
-            self.care_for_each_period(period)
-            for dt in self.get_lst_dt(period[0], period[1], self.delta_t):
-                print(dt)
-                self.loop(dt)
+        for fig_category in self.lst_fig_category:
+            self.fig_category = fig_category
+            self.category_conf = project_conf['exec_cond_{1}'.format(project, fig_category)]
+            lst_period = []
+            for period_sta, period_end in zip(self.category_conf['lst_period_sta'], self.category_conf['lst_period_end']):
+                lst_period.append([datetime.datetime.strptime(period_sta, '%Y%m%d%H'), datetime.datetime.strptime(period_end, '%Y%m%d%H')])
+            for i, period in enumerate(lst_period):
+                self.target = self.category_conf['targets'][i]
+                self.care_for_each_period(period)
+                for dt in self.get_lst_dt(period[0], period[1], self.delta_t):
+                    print(dt)
+                    self.loop(dt)
 
     def do_inner_proc(self, dt, slide):
-        for i, fig_type in enumerate(self.lst_fig_type):
-            fig_dir = self.lst_fig_dir[i]
+        for i, fig_type in enumerate(self.category_conf['lst_fig_type']):
+            fig_dir = self.category_conf['lst_fig_dir'][i]
             icol = i % self.ncols
             irow = i / self.ncols
 
@@ -168,7 +168,7 @@ class PPTXHandler(object):
         title_slide_layout = self.prs.slide_layouts[0]
         slide = self.prs.slides.add_slide(title_slide_layout)
         shapes = slide.shapes
-        shapes.title.text = self.target
+        shapes.title.text = '{0} {1}'.format(self.fig_category, self.target)
         days = (period[1] - period[0]).days
         hours = (period[1] - period[0]).seconds / 3600
         if days == 0:
