@@ -8,6 +8,7 @@ import logging
 
 from pptx import Presentation
 from pptx.util import Inches
+from pptx.dml.color import RGBColor
 
 from toml_parser import TOMLParser
 
@@ -128,6 +129,15 @@ class PPTXHandler(object):
             img_path = self.get_filepath(fig_dir, fig_type, self.suffix)
             slide.shapes.add_picture(img_path, left, top, height, width)
 
+            left_ = Inches(9.45-len(self.section_title)*0.09225)
+            top_ = Inches(0.1)
+            width_ = Inches(0.45+len(self.section_title)*0.0925)
+            height_ = Inches(0.4)
+            txBox = slide.shapes.add_textbox(left_, top_, width_, height_)
+            txBox.line.color.rgb = RGBColor(0x00, 0x00, 0x00)
+            tf = txBox.text_frame
+            tf.text = self.section_title
+
     def const_slide(self, conf_slide):
         bullet_slide_layout = self.prs.slide_layouts[1]
         slide = self.prs.slides.add_slide(bullet_slide_layout)
@@ -168,7 +178,8 @@ class PPTXHandler(object):
         title_slide_layout = self.prs.slide_layouts[0]
         slide = self.prs.slides.add_slide(title_slide_layout)
         shapes = slide.shapes
-        shapes.title.text = '{0} {1}'.format(self.fig_category, self.target)
+        self.section_title = '{0} {1}'.format(self.fig_category, self.target)
+        shapes.title.text = self.section_title
         days = (period[1] - period[0]).days
         hours = (period[1] - period[0]).seconds / 3600
         if days == 0:
