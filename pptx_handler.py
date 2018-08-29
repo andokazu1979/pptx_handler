@@ -7,8 +7,10 @@ import sys
 import logging
 
 from pptx import Presentation
-from pptx.util import Inches
+from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
+from pptx.enum.text import PP_ALIGN
+from pptx.enum.text import MSO_ANCHOR, MSO_AUTO_SIZE
 
 from toml_parser import TOMLParser
 
@@ -136,7 +138,11 @@ class PPTXHandler(object):
             txBox_figtitle.fill.solid()
             txBox_figtitle.fill.fore_color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
             tf_figtitle = txBox_figtitle.text_frame
+            tf_figtitle.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
             tf_figtitle.text = lst_fig_title[i]
+            p = tf_figtitle.paragraphs[0]
+            p.alignment = PP_ALIGN.CENTER
+            p.font.size = Pt(14)
 
             left_ = Inches(9.45-len(self.section_title)*0.09225)
             top_ = Inches(0.1)
