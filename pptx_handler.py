@@ -107,6 +107,7 @@ class PPTXHandler(object):
                     self.loop(dt)
 
     def do_inner_proc(self, dt, slide):
+        lst_fig_title = self.category_conf['lst_fig_title']
         for i, fig_type in enumerate(self.category_conf['lst_fig_type']):
             fig_dir = self.category_conf['lst_fig_dir'][i]
             icol = i % self.ncols
@@ -128,6 +129,14 @@ class PPTXHandler(object):
                 self.suffix = self.str_suffix.format(dt.year, dt.strftime("%b").upper(), dt.day, dt.hour)
             img_path = self.get_filepath(fig_dir, fig_type, self.suffix)
             slide.shapes.add_picture(img_path, left, top, height, width)
+
+            top_figtitle = top - Inches(0.020)
+            height_figtitle = Inches(0.4)
+            txBox_figtitle = slide.shapes.add_textbox(left, top_figtitle, width, height_figtitle)
+            txBox_figtitle.fill.solid()
+            txBox_figtitle.fill.fore_color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+            tf_figtitle = txBox_figtitle.text_frame
+            tf_figtitle.text = lst_fig_title[i]
 
             left_ = Inches(9.45-len(self.section_title)*0.09225)
             top_ = Inches(0.1)
