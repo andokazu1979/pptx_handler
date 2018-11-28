@@ -66,7 +66,7 @@ class PPTXHandler(object):
         self.height = project_conf['height']
 
         self.title = project_conf['title']
-        self.str_suffix = project_conf['str_suffix']
+        # self.str_suffix = project_conf['str_suffix']
 
         self.lst_slide = project_conf['slide']
 
@@ -111,9 +111,19 @@ class PPTXHandler(object):
     def do_inner_proc(self, dt, slide):
         lst_fig_title = self.category_conf['lst_fig_title']
         for i, fig_type in enumerate(self.category_conf['lst_fig_type']):
-            fig_dir = self.category_conf['lst_fig_dir'][i]
+            self.fig_dir = self.category_conf['lst_fig_dir'][i]
+            self.prefix = self.category_conf['lst_prefix'][i]
+            self.str_suffix = self.category_conf['lst_suffix'][i]
             icol = i % self.ncols
             irow = i / self.ncols
+
+            if self.str_suffix == '{0:04d}{1:02d}{2:02d}{3:02d}.png':
+                self.suffix = self.str_suffix.format(dt.year, dt.month, dt.day, dt.hour)
+            elif self.str_suffix == '{3:02d}Z{2:02d}{1}{0:04d}.png':
+                self.suffix = self.str_suffix.format(dt.year, dt.strftime("%b").upper(), dt.day, dt.hour)
+            elif self.str_suffix == '{0:02d}{1:02d}{2:02d}.png':
+                dt_tmp = dt + datetime.timedelta(hours=11)
+                self.suffix = self.str_suffix.format(dt_tmp.month, dt_tmp.day, dt_tmp.hour)
 
             if self.special_care(fig_type, icol, irow, dt, slide):
                 continue
@@ -125,14 +135,10 @@ class PPTXHandler(object):
             top = Inches(self.row_sta + self.row_int * irow)
             width = Inches(self.sizex)
             height = Inches(self.sizey)
-            if self.str_suffix == '{0:04d}{1:02d}{2:02d}{3:02d}.png':
-                self.suffix = self.str_suffix.format(dt.year, dt.month, dt.day, dt.hour)
-            elif self.str_suffix == '{3:02d}Z{2:02d}{1}{0:04d}.png':
-                self.suffix = self.str_suffix.format(dt.year, dt.strftime("%b").upper(), dt.day, dt.hour)
-            img_path = self.get_filepath(fig_dir, fig_type, self.suffix)
+            img_path = self.get_filepath(self.fig_dir, fig_type, self.suffix)
             slide.shapes.add_picture(img_path, left, top, height, width)
 
-            top_figtitle = top - Inches(0.020)
+            top_figtitle = top - Inches(0.080)
             height_figtitle = Inches(0.4)
             txBox_figtitle = slide.shapes.add_textbox(left, top_figtitle, width, height_figtitle)
             txBox_figtitle.fill.solid()
@@ -178,7 +184,7 @@ class PPTXHandler(object):
 
     def get_filepath(self, fig_dir, fig_type, suffix):
         if fig_type != '-':
-            img_path = '{0}/{1}/{2}/{3}/{2}_{4}'.format(self.dirpath_in, fig_dir, fig_type, self.target, suffix)
+            img_path = '{0}/{1}/{2}/{3}/{4}_{5}'.format(self.dirpath_in, self.fig_dir, fig_type, self.target, self.prefix, suffix)
         return img_path
 
     def loop(self, dt):
@@ -210,8 +216,8 @@ class PPTXHandler(object):
             top = Inches(self.top)
             width = Inches(self.width)
             height = Inches(self.height)
-            img_path = '{0}/{1}/{2}/{1}_{3}'.format(self.dirpath_in, fig_type[:-1], self.target, self.suffix)
-            print(img_path)
+            img_path = '{0}/{1}/{2}/{3}/{4}_{5}'.format(self.dirpath_in, self.fig_dir, fig_type[:-1], self.target, self.prefix, self.suffix)
+            # print(img_path)
             try:
                 slide.shapes.add_picture(img_path, left, top, height, width)
             except IOError as e:
